@@ -33,15 +33,15 @@ init:
 	out portD, temp				 ;Selects the display placed on the right side
 
 	;Timer
-	ldi temp, 124				 ;Temporização de 1ms 128/(16*10^6)*(124+1)
+	ldi temp, 124				 ;TemporizaÃ§Ã£o de 1ms 128/(16*10^6)*(124+1)
 	out OCR0, temp
 	ldi temp, 0b00001101		 ;TC0 em modo CTC, prescaler 128, OC0 off
 	out TCCR0, temp
-	in temp, TIMSK				 ;Enable da interrupção do TC0 (CTC)
+	in temp, TIMSK				 ;Enable da interrupÃ§Ã£o do TC0 (CTC)
 	ori temp, 0b00000010
 	out TIMSK, temp
 
-	sei							 ;Enable global das interrupções
+	sei							 ;Enable global das interrupÃ§Ãµes
 
 	ldi ZL, low(table*2)		 ;Stores the low value of the table in Z
 	ldi ZH, high(table*2)		 ;Stores the high value of the table in Z
@@ -133,15 +133,15 @@ rjmp red				     ;If there are 9 cars in the lot it will turn on d3
 Green:
 	ldi r25, $BE
 	out portA, r25
-
+	rjmp leave
 Yellow:
 	ldi r25, $BD
 	out portA, r25
-
+	rjmp leave
 Red:
 	ldi r25, $7B
 	out portA, r25
-
+leave:
 	ret
 ;********************TIMER***********************************
 
