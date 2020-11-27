@@ -21,7 +21,7 @@ table:
 
 ;********************INITIALIZATION***********************************											  
 init:
-
+	ldi luz,0
 	ser temp
 	out DDRA, temp				 ;Sets DDRA as output
 	out DDRC, temp				 ;Sets DDRC as output
@@ -30,7 +30,6 @@ init:
 
 	ldi temp, 0b11000000
 	out DDRD, temp 				 ;Sets DDRD as input (PD0 - PD5) and as output (PD6 - PD7)
-	ldi temp, 0xFF
 	out portD, temp				 ;Selects the display placed on the right side
 
 	;Timer
@@ -69,53 +68,53 @@ ciclo:
 	breq teste_entrada			 ;If the park is empty pressing sw2 won't do anything
 	cp r12,r13					 ;Checks if the park is full
 	breq teste_saida			 ;If the parks if sull pressing sw1 won't do anything
-	sbis portd,0				 ;Checks if sw1 (+1 car) is pressed
+	sbis pind,0				 ;Checks if sw1 (+1 car) is pressed
 	rjmp entrada				 
-	sbis portd,1				 ;Checks if sw2 (-1 car) is pressed
+	sbis pind,1				 ;Checks if sw2 (-1 car) is pressed
 	rjmp saida
 	rjmp ciclo					 ;Repeats the cicle
 teste_entrada:					 ;This function will be used if the park if empty
-	sbis portd,0				
+	sbis pind,0				
 	rjmp entrada
 	rjmp ciclo
 teste_saida:					 ;This function will be used if the park if full
-	sbis portd,1
+	sbis pind,1
 	rjmp saida
 	rjmp ciclo
 delay:							 ;This function prevents the entry of more than 1 car in 1 button press
-	sbic portd,0
+	sbic pind,0
 	ret
 	rjmp delay
 delay1:							 ;Same as the delay function
-	sbic portd,1	
+	sbic pind,1	
 	ret
 	rjmp delay1
 
 entrada:
 	brtc entrada			 ;Timer
 	clt						 ;Clears the variable T
-	sbic portD, 0			 ;Checks if sw1 is still pressed after 1ms
+	sbic pind, 0			 ;Checks if sw1 is still pressed after 1ms
 	rjmp ciclo			     ;If it was pressed less than 1 ms it will go back to the cycle 	
 	inc ZL					 ;Increases the value of ZL
 	inc luz				     ;Increases the value of luz
 	lpm r12, Z				 ;Loads the value of Z in r12
 	out portC, r12			 
 	call LEDs				 ;Leds will determinate wich leds are activated
-	sbis portd,0		     ;Checks if sw1 is still being activated
+	sbis pind,0		     ;Checks if sw1 is still being activated
 	call delay				 ;if it is it will stay in the delay loop till it stops being pressed
 	rjmp ciclo
 
 saida:
     brtc  saida				 ;Timer
 	clt						 ;Clears the variable T
-	sbic portD, 1			 ;Checks if sw2 is still pressed after 1ms
+	sbic pind, 1			 ;Checks if sw2 is still pressed after 1ms
 	rjmp ciclo				 ;If it was pressed less than 1 ms it will go back to the cycle 
 	dec ZL					 ;Decreases the value of ZL
 	dec luz					 ;Decreases the value of luz
 	lpm r12, Z				 ;Loads the value of Z in r12
 	out portC, r12
 	call LEDs				 ;Leds will determinate wich leds are activated
-	sbis portD,1			 ;Checks if sw2 is still being activated
+	sbis pind,1			 ;Checks if sw2 is still being activated
 	call delay1				 ;if it is it will stay in the delay loop till it stops being pressed
 	rjmp ciclo
 
@@ -128,21 +127,20 @@ brlo green					 ;If it is lower than 5 (0<cars<5) it will turn on d1
 cpi luz,8					 ;Compares LUZ with the value 9
 brlo yellow					 ;If it is lower than 8 (5<=cars<9) it will turn on d2
 
-
 rjmp red				     ;If there are 9 cars in the lot it will turn on d3
 
 Green:
-	ldi r25, $BE
-	out portA, r25
-	rjmp leave
+	ldi r25, 0b10111110
+	rjmp cycle_end
 Yellow:
-	ldi r25, $BD
-	out portA, r25
-	rjmp leave
+	ldi r25, 0b10111101
+	rjmp cycle_end
+
 Red:
-	ldi r25, $7B
-	out portA, r25
-leave:
+	ldi r25, 0b01110111
+	rjmp cycle_end
+cycle_end:
+	out porta,r25
 	ret
 ;********************TIMER***********************************
 
