@@ -1,0 +1,41 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega128"</DEVICE>
+ <WORKING_DIR>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\Debug\projeto2final.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>projeto2final.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>projeto2final.map</FILE>
+  <FILE>projeto2final.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <init><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>3</LINE></init>
+  <loop><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>28</LINE></loop>
+  <SW1><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>33</LINE></SW1>
+  <delay><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>81</LINE></delay>
+  <SW6_2><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>67</LINE></SW6_2>
+  <SW1_1><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>41</LINE></SW1_1>
+  <SW1_2><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>45</LINE></SW1_2>
+  <SW6><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>57</LINE></SW6>
+  <SW6_1><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>64</LINE></SW6_1>
+  <cycle0><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>86</LINE></cycle0>
+  <cycle1><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>88</LINE></cycle1>
+  <cycle2><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>91</LINE></cycle2>
+  <testSW6><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>117</LINE></testSW6>
+  <testSW1><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>112</LINE></testSW1>
+  <cycle3><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto2final\projeto2final\main.asm</FILE><LINE>98</LINE></cycle3>
+ </LABELS>
+</ASSEMBLER_INFO>
