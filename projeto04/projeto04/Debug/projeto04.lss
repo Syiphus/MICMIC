@@ -1,12 +1,12 @@
 
-AVRASM ver. 2.2.7  C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm Tue Dec 01 17:01:01 2020
+AVRASM ver. 2.2.7  C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm Tue Dec 01 23:02:34 2020
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc'
-C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(3): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc'
+C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(4): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc'
-C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(3): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc'
+C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(4): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc'
                                  
-                                 ;
+                                 ;*************************************************************
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega128.xml ***********
                                  ;*************************************************************************
@@ -1225,7 +1225,8 @@ C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(3): Inclu
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
-                                 ; projeto04.asm
+                                 ;--------------------Projeto04--------------------------------
+                                 ;************************************************************
                                  .include <m128def.inc>
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega128.xml ***********
@@ -1270,18 +1271,16 @@ C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(3): Inclu
                                  #endif  /* _M128DEF_INC_ */
                                  
                                  ; ***** END OF FILE ******************************************************
-                                 .def temp = r16
-                                  .def cnt_int = r17
-                                  .def temp_int = r18
-                                  .def limite = r19
-                                  .def freq = r24
-000000 e930                       ldi limite, 0x90
-                                  .def save = r20
+                                 .def temp = r16 
+                                 .def cnt_int = r17
+                                 .def temp_int = r18
+                                 .def freq = r24
+                                 .def save = r20
                                  .cseg			;Inicio do segmento de codigo
                                  .org 0			;Vetor de Reset
-000000 940c 0064                 	jmp main 
+000000 940c 0061                 	jmp main 
                                  .org 0x1E
-00001e 940c 008f                 	jmp int_tc0
+00001e 940c 0084                 	jmp int_tc0
                                  .org 0x46
                                  
                                  table:
@@ -1291,95 +1290,92 @@ C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm(3): Inclu
 000049 80f8
 00004a 0090                      	.db 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90,0
                                  
-                                 ;Inicialização
+                                 ;***********************Inicialização**************************
                                  init: 
-00004b ef0f                      	ser temp
-00004c bb0a                      	out ddra, temp // coloca 1 em todos os bits de r16
-00004d bb0b                      	out porta,temp //configura os pinos da porta A como saídas
-00004e bb04                      	out ddrc,temp // Colocar todos os pinos do PortC como saída para o display de 7 segmentos
-00004f bb05                      	out portc,temp //leds do display apagados
-000050 ec00                      	ldi temp, 0b11000000
-000051 bb01                      	out DDRD, temp 				 ;Sets DDRD as input (PD0 - PD5) and as output (PD6 - PD7)
-000052 ef0f                      	ldi temp, 0b11111111
-000053 bb02                      	out portD, temp				 ;Selects the display placed on the right side
+00004b ef0f                      	ser temp				
+00004c bb04                      	out ddrc,temp				 ;Sets DDRD as output
+00004d ec00                      	ldi temp, 0b11000000
+00004e bb01                      	out DDRD, temp 				 ;Sets DDRD as input (PD0 - PD5) and as output (PD6 - PD7)
+00004f ef0f                      	ldi temp, 0b11111111
+000050 bb02                      	out portD, temp				 ;Selects the display placed on the right side and sets the value 1 in all switches
                                  
                                  	;timer
-000054 e90b                      	ldi temp,155 ;temporização de 10ms 1024/(16*10^6)*(155)
-000055 bf01                      	out OCR0,temp
+000051 e90b                      	ldi temp,155				 ;temporização de 10ms 1024/(16*10^6)*(155)
+000052 bf01                      	out OCR0,temp
                                  
-000056 e312                      	ldi cnt_int ,50 ; 2HZ 
-000057 e382                      	ldi freq,50
-000058 e00f                      	ldi temp, 0b00001111 ;TC0 em modo CTC, prescaler 1024, OC0 off
-000059 bf03                      	out TCCR0,temp
-00005a b707                      	in r16,TIMSK ;enable da interrupção do TC0 (CTC)
-00005b 6002                      	ori r16,0b00000010
-00005c bf07                      	out TIMSK,r16
+000053 e312                      	ldi cnt_int ,50				 ;2HZ 
+000054 e382                      	ldi freq,50					 ; Variable that will serve as a cnt_int backup
+000055 e00f                      	ldi temp, 0b00001111		 ;TC0 em modo CTC, prescaler 1024, OC0 off
+000056 bf03                      	out TCCR0,temp
+000057 b707                      	in r16,TIMSK				 ;enable da interrupção do TC0 (CTC)
+000058 6002                      	ori r16,0b00000010
+000059 bf07                      	out TIMSK,r16
                                  
-00005d 9478                      	sei; enable global das interrupções
-00005e e8ec                      	ldi ZL,low(table*2) 
-00005f e0f0                      	ldi ZH,high(table*2)
-000060 2f4e                      	mov save,ZL
-000061 90c4                      	lpm r12,z
-000062 bac5                      	out portc,r12
-000063 9508                      	ret
-                                 ;programa principal
+00005a 9478                      	sei							 ; enable global das interrupções
+00005b e8ec                      	ldi ZL,low(table*2) 
+00005c e0f0                      	ldi ZH,high(table*2)
+00005d 2f4e                      	mov save,ZL
+00005e 90c4                      	lpm r12,z
+00005f bac5                      	out portc,r12
+000060 9508                      	ret
+                                 ;*********************Programa_Principal**************************************
                                  main:
-000064 ef0f                      	ldi temp,low(RAMEND)
-000065 bf0d                      	out spl,temp
-000066 e100                      	ldi temp,high(RAMEND)
-000067 bf0e                      	out sph,temp
+000061 ef0f                      	ldi temp,low(RAMEND)		 ;Inicialização da stack
+000062 bf0d                      	out spl,temp
+000063 e100                      	ldi temp,high(RAMEND)
+000064 bf0e                      	out sph,temp
                                  
-000068 940e 004b                 	call init
+000065 940e 004b                 	call init
                                  loop: 
-00006a 9b82                      	sbis pind,2
-00006b 940e 0086                 	call cinquenta
-00006d 9b83                      	sbis pind,3
-00006e 940e 0089                 	call dois
-000070 9b84                      	sbis pind,4
-000071 c001                      	rjmp count
-000072 cff7                      	rjmp loop
+000067 9b82                      	sbis pind,2					 ;Checks if SW3 is pressed
+000068 940e 007b                 	call cinquenta				 ;if it is the frequency will change to 50Hz
+00006a 9b83                      	sbis pind,3					 ;Checks if SW4 is pressed
+00006b 940e 007e                 	call dois					 ;if it is the frequency will change to 2Hz
+00006d 9b84                      	sbis pind,4					 ;Checks if SW4 is being pressed
+00006e c001                      	rjmp count					 ;if it is it will start the  "game"
+00006f cff7                      	rjmp loop					 ;repeats the loop
                                  count:
-000073 f7fe                      	brtc count
-000074 94e8                          clt
-000075 95e3                      	inc ZL
-000076 90c4                      	lpm r12,Z
-000077 fec7                      	SBRS r12,7
-000078 940e 008c                 	call reset
-00007a bac5                      	out portc,r12
-00007b 9b85                      	sbis pind,5
-00007c cfed                      	rjmp loop
-00007d 9b82                      	sbis pind,2
-00007e 940e 0086                 	call cinquenta
-000080 9b83                      	sbis pind,3
-000081 940e 0089                 	call dois
-000083 9b85                      	sbis pind,5
-000084 cfe5                      	rjmp loop
-000085 cfed                      	rjmp count
-                                 cinquenta:
-000086 e012                      	ldi cnt_int ,2 ; 50HZ 
-000087 e082                      	ldi freq,2
-000088 9508                      	ret
-                                 dois: 
-000089 e312                      	ldi cnt_int ,50 ; 2HZ
-00008a e382                      	ldi freq, 50
-00008b 9508                      	ret
-                                 reset:
-00008c 2fe4                      	mov ZL,save
-00008d 90c4                      	lpm r12,Z
-00008e 9508                      	ret
-                                 	
-                                 ;TIMER
+000070 f7fe                      	brtc count					 ;Counter
+000071 94e8                          clt						     ;Clears T
+000072 95e3                      	inc ZL					     ;Increments the value of ZL
+000073 90c4                      	lpm r12,Z					 ;Loads the value of ZL into Z
+000074 fec7                      	SBRS r12,7					 ;Checks if most significant bit of r12 is set 
+000075 940e 0081                 	call reset					 ;If it is reset will be called
+000077 bac5                      	out portc,r12			     ;Outputs the value of r12 into the display
+                                 //	sbis pind,5				     --Parte comentada por duvida se frequencia poderia
+                                 //	rjmp loop					 --ser alterada a meio do codigo ou não
+                                 //	sbis pind,2
+                                 //	call cinquenta
+                                 //	sbis pind,3
+                                 //	call dois
+000078 9b85                      	sbis pind,5					 ;Checks is SW6 is being pressed
+000079 cfed                      	rjmp loop					 ;If it is the "game" will stop
+00007a cff5                      	rjmp count					 ;If it is not the "game" will continua
+                                 cinquenta:						 ;Changes the value of cnt_int to change the frequency of the program
+00007b e012                      	ldi cnt_int ,2 ; 50HZ		 ;making it count more/less times 
+00007c e082                      	ldi freq,2
+00007d 9508                      	ret
+                                 dois:							 ;Same as the segment "cinquenta"
+00007e e312                      	ldi cnt_int ,50 ; 2HZ
+00007f e382                      	ldi freq, 50
+000080 9508                      	ret
+                                 reset:						     ;Once the table has reached its end 
+000081 2fe4                      	mov ZL,save					 ;ZL will begin from the start of the table again
+000082 90c4                      	lpm r12,Z					 ;we do this by copying the value stored on "save"
+000083 9508                      	ret							 ;returns 
+                                 
+                                 ;*************************Timer***********************************
                                  int_tc0:
-00008f b72f                      	IN TEMP_INT,sreg ;guarda o valor SREG
-000090 951a                      	DEC cnt_int ;verufica se passou 500ms/20ms
-000091 f421                      	BRNE f_int
-000092 2f18                      	mov cnt_int,freq
-000093 bf2f                      	out SREG,temp_int ;report o valor SREG
-000094 9468                      	set ;ativa a flag t do sreg
-000095 9518                      	reti
+000084 b72f                      	IN TEMP_INT,sreg			 ;guarda o valor SREG
+000085 951a                      	DEC cnt_int				     ;verifica se passou 500ms/20ms
+000086 f421                      	BRNE f_int
+000087 2f18                      	mov cnt_int,freq
+000088 bf2f                      	out SREG,temp_int			 ;report o valor SREG
+000089 9468                      	set							 ;ativa a flag t do sreg
+00008a 9518                      	reti
                                  f_int:
-000096 bf2f                      	out SREG,temp_int
-000097 9518                      	reti
+00008b bf2f                      	out SREG,temp_int
+00008c 9518                      	reti
 
 
 RESOURCE USE INFORMATION
@@ -1399,10 +1395,10 @@ counted separately from r26..r31 here.
 "ATmega128" register use summary:
 x  :   0 y  :   0 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   6 
-r13:   0 r14:   0 r15:   0 r16:  20 r17:   5 r18:   3 r19:   1 r20:   2 
+r13:   0 r14:   0 r15:   0 r16:  17 r17:   5 r18:   3 r19:   0 r20:   2 
 r21:   0 r22:   0 r23:   0 r24:   4 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   4 r31:   1 
-Registers used: 10 out of 35 (28.6%)
+Registers used: 9 out of 35 (25.7%)
 
 "ATmega128" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
@@ -1410,17 +1406,17 @@ andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   1 brpl  :   0 brsh  :   0 brtc  :   1 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   6 cbi   :   0 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   4 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   1 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :   0 cpse  :   0 dec   :   1 elpm  :   0 eor   :   0 fmul  :   0 
 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   2 inc   :   1 
-jmp   :   2 ld    :   0 ldd   :   0 ldi   :  15 lds   :   0 lpm   :   6 
+jmp   :   2 ld    :   0 ldd   :   0 ldi   :  14 lds   :   0 lpm   :   6 
 lsl   :   0 lsr   :   0 mov   :   3 movw  :   0 mul   :   0 muls  :   0 
-mulsu :   0 neg   :   0 nop   :   0 or    :   0 ori   :   1 out   :  15 
-pop   :   0 push  :   0 rcall :   0 ret   :   4 reti  :   2 rjmp  :   5 
+mulsu :   0 neg   :   0 nop   :   0 or    :   0 ori   :   1 out   :  12 
+pop   :   0 push  :   0 rcall :   0 ret   :   4 reti  :   2 rjmp  :   4 
 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 
-sbis  :   7 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   1 sec   :   0 
+sbis  :   4 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   1 sec   :   0 
 seh   :   0 sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   1 
 sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 
 sts   :   0 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
@@ -1430,7 +1426,7 @@ Instructions used: 21 out of 114 (18.4%)
 "ATmega128" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000130    164     10    174  131072   0.1%
+[.cseg] 0x000000 0x00011a    140     10    150  131072   0.1%
 [.dseg] 0x000100 0x000100      0      0      0    4096   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

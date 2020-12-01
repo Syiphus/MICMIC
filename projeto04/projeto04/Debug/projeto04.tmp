@@ -22,15 +22,15 @@
   <FILE>projeto04.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <main><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>53</LINE></main>
-  <int_tc0><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>99</LINE></int_tc0>
-  <table><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>18</LINE></table>
-  <init><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>22</LINE></init>
-  <loop><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>60</LINE></loop>
-  <cinquenta><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>85</LINE></cinquenta>
-  <dois><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>89</LINE></dois>
-  <count><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>68</LINE></count>
-  <reset><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>93</LINE></reset>
-  <f_int><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>107</LINE></f_int>
+  <main><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>49</LINE></main>
+  <int_tc0><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>95</LINE></int_tc0>
+  <table><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>17</LINE></table>
+  <init><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>21</LINE></init>
+  <loop><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>56</LINE></loop>
+  <cinquenta><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>81</LINE></cinquenta>
+  <dois><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>85</LINE></dois>
+  <count><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>64</LINE></count>
+  <reset><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>89</LINE></reset>
+  <f_int><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>103</LINE></f_int>
  </LABELS>
 </ASSEMBLER_INFO>

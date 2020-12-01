@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm Tue Dec 01 17:01:01 2020
+AVRASM ver. 2.2.7  C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm Tue Dec 01 23:02:34 2020
 
 
 EQU  SIGNATURE_000 0000001e
@@ -870,16 +870,15 @@ EQU  INT_VECTORS_SIZE 00000046
 DEF  temp         r16
 DEF  cnt_int      r17
 DEF  temp_int     r18
-DEF  limite       r19
 DEF  freq         r24
 DEF  save         r20
-CSEG main         00000064
-CSEG int_tc0      0000008f
+CSEG main         00000061
+CSEG int_tc0      00000084
 CSEG table        00000046
 CSEG init         0000004b
-CSEG loop         0000006a
-CSEG cinquenta    00000086
-CSEG dois         00000089
-CSEG count        00000073
-CSEG reset        0000008c
-CSEG f_int        00000096
+CSEG loop         00000067
+CSEG cinquenta    0000007b
+CSEG dois         0000007e
+CSEG count        00000070
+CSEG reset        00000081
+CSEG f_int        0000008b
