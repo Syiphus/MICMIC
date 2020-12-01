@@ -124,7 +124,7 @@ LEDs:						 ;This function will check wich leds need to be ativated
 cpi luz,5					 ;Compares LUZ with the value 5
 brlo green					 ;If it is lower than 5 (0<cars<5) it will turn on d1
 
-cpi luz,8					 ;Compares LUZ with the value 9
+cpi luz,9					 ;Compares LUZ with the value 9
 brlo yellow					 ;If it is lower than 8 (5<=cars<9) it will turn on d2
 
 rjmp red				     ;If there are 9 cars in the lot it will turn on d3
@@ -137,7 +137,7 @@ Yellow:
 	rjmp cycle_end
 
 Red:
-	ldi r25, 0b01110111
+	ldi r25, 0b01111011
 	rjmp cycle_end
 cycle_end:
 	out porta,r25
