@@ -1,0 +1,36 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega128"</DEVICE>
+ <WORKING_DIR>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m128def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\Debug\projeto04.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>projeto04.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>projeto04.map</FILE>
+  <FILE>projeto04.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <main><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>53</LINE></main>
+  <int_tc0><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>99</LINE></int_tc0>
+  <table><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>18</LINE></table>
+  <init><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>22</LINE></init>
+  <loop><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>60</LINE></loop>
+  <cinquenta><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>85</LINE></cinquenta>
+  <dois><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>89</LINE></dois>
+  <count><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>68</LINE></count>
+  <reset><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>93</LINE></reset>
+  <f_int><FILE>C:\Users\diogo\Documents\Atmel Studio\7.0\projeto04\projeto04\main.asm</FILE><LINE>107</LINE></f_int>
+ </LABELS>
+</ASSEMBLER_INFO>
