@@ -30,6 +30,7 @@ init:
 
 	ldi temp, 0b11000000
 	out DDRD, temp 				 ;Sets DDRD as input (PD0 - PD5) and as output (PD6 - PD7)
+	ldi temp, 0xff
 	out portD, temp				 ;Selects the display placed on the right side
 
 	;Timer
