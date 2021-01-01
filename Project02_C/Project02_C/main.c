@@ -179,7 +179,7 @@ int main(void)
 				flag1 = 1;
 			}
 			else{
-				if(temp<543)
+				if(AD<543)
 				{
 					temp = 0;
 				}
