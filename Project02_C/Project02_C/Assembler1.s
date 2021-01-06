@@ -1,11 +1,11 @@
 .include<m123def.inc>
 
-.global ler_AD
+.global read_analog
 
 .extern leituraL
 .extern leituraH
 
-ler_AD:
+read_analog:
 	SBI ADCSRA, 6
 	LDS r16, 0
 	CPI r16, 0b01000000
