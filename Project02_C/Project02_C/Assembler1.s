@@ -11,7 +11,9 @@ read_analog:
 sbis ADCSRA,ADIF
 rjmp read_analog
  
-in r16,ADCL
-in r17,ADCH
+in r11,ADCL
+in r12,ADCH
+mov leituraL,r11 
+mov leituraH,r12
 
 ret
