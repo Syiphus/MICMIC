@@ -60,6 +60,7 @@ void inic(void)
 void mudar_rot(void);
 void display_(void);
 int convert(long long n);
+extern "C" int read_analog(void);
 
 /*This is the interrupt functions starting with the Timer/Counter 0 and followed by the switches*/
 ISR(TIMER0_COMP_vect)
@@ -160,7 +161,7 @@ int main(void)
 		}
 		while(analog == 1){
 		screen0 = 0b11000010;
-		extern read_analog();
+		read_analog();
 		if(negative == 1) flag1 = 1;
 		AD = (leituraH << 8) + leituraL;
 		AD = convert(AD);
