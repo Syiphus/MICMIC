@@ -102,7 +102,8 @@ int main(void)
 	
 	while (1)
 	{
-		while(analog == 0){
+		switch(analog){
+		case 0:
 		screen0= 0b10010000;
 		switch(switch_)
 		{
@@ -158,8 +159,8 @@ int main(void)
 			switch_=0;
 			/*Changes the motor speed*/
 			OCR2 = DC(motor);
-		}
-		while(analog == 1){
+		break;
+		case 1:
 		screen0 = 0b11000010;
 		read_analog();
 		if(negative == 1) flag1 = 1;
@@ -197,7 +198,7 @@ int main(void)
 			screen2=display[temp/10];
 		}
 		OCR2 = DC(AD);
-		}
+	}
 	}
 }
 /*In this function the direction of the motor will be checked and changed */
