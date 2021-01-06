@@ -160,7 +160,7 @@ int main(void)
 		}
 		while(analog == 1){
 		screen0 = 0b11000010;
-		//read_analog();
+		read_analog();
 		if(negative == 1) flag1 = 1;
 		AD = (leituraH << 8) + leituraL;
 		AD = convert(AD);
