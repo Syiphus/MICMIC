@@ -9,7 +9,7 @@ read_analog:
 	SBI ADCSRA, 6
 	LDS r16, 0
 	CPI r16, 0b01000000
-	BRNE ler_AD
+	BRNE read_analog
 
 	LDS ADCL, leituraL
 	LDS ADCH, leituraH
