@@ -1,7 +1,20 @@
+.include<m123def.inc>
 
-/*
- * Assembler1.s
- *
- * Created: 01/01/2021 12:48:55
- *  Author: diogo
- */ 
+.global ler_AD
+
+.extern leituraL
+.extern leituraH
+
+ler_AD:
+	SBI ADCSRA, 6
+	LDS r16, 0
+	CPI r16, 0b01000000
+	BRNE ler_AD
+
+	LDS ADCL, leituraL
+	LDS ADCH, leituraH
+
+	STS leituraL
+	STS leituraH
+
+	ret
