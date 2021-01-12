@@ -1,19 +1,30 @@
-;.include <m128def.inc>
-#define __SFR_OFFSET 0
-#include<avr/interrupt.h>
+/*#include <avr/io.h>
+#define __SFR_OFFSET    0
 
-.global read_analog
-.byte	4		; allocate 4 bytes
+.Global read_analog
+
 .extern leituraL
-.extern leituraH
+.extern   leituraH
 
-read_analog:
-sbis ADCSRA,ADIF
-rjmp read_analog
- 
-in r11,ADCL
-in r12,ADCH
-mov leituraL,r11 
-mov leituraH,r12
 
-ret
+
+read_analog: 
+     PUSH r16
+     PUSH r17
+     PUSH r18
+
+     SBI    ADCSRA, 6
+     IN        r16,    0
+     cpi    r16,    0b01000000
+     brne    read_analog
+
+     IN        r17, ADCL
+     IN        r18, ADCH
+
+     STS   r21, r17
+     STS    r20, r18
+
+     POP r16
+     POP r17
+     POP r18
+     ret*/
