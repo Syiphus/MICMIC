@@ -16,11 +16,12 @@ const unsigned char display[] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8,
 
 /*This is our global variables, all volatile as all of them are altered in the middle of the code*/
 volatile unsigned char switch_;
+volatile unsigned char lerL,lerH;
 volatile unsigned char flag,negative=0;
 volatile unsigned char screen1, screen2, screen3,screen0;
 volatile unsigned char motor;
 volatile unsigned char analog=0,flag1;
-long long AD,temp;
+unsigned long AD,temp;
 
 /*This is the initialization function where all the starting commands will be performed (such as defining ports and interrupts)*/
 void inic(void)
@@ -38,7 +39,7 @@ void inic(void)
 	
 	/*External interrupts are initialized here which will be used to determine which of the switches were pressed*/
 	EICRA = 0b10101010;
-	EICRB = 0B00001010;
+	EICRB = 0b00001010;
 	EIMSK = 0b00111111;
 	/*Here we initialize the Timer/Counter 0 with a prescaler of 1024 giving us a time of 5ms*/
 	OCR0 = 77;
@@ -59,7 +60,9 @@ void inic(void)
 /*Here we tell the program that there are functions on the bottom that will be needed*/
 void mudar_rot(void);
 void display_(void);
-int convert(long long n);
+int digital(void);
+int analogico(void);
+int convert(unsigned long n);
 extern "C" int read_analog(void);
 
 /*This is the interrupt functions starting with the Timer/Counter 0 and followed by the switches*/
@@ -88,22 +91,14 @@ ISR(INT3_vect)
 {
 	switch_=4;
 }
-ISR(INT4_vect) { 
-	analog = 1;
-}
-ISR(INT5_vect) { 
-	analog = 0;
-}
 
-/*This is our main function where there is a case/switch that will operate acording to the switches that are pressed*/
-int main(void)
-{
-	inic();
-	
-	while (1)
+int digital(void){
+    while (1)
 	{
-		while(analog == 0){
-		screen0= 0b10010000;
+		screen0= 0b10100001;
+		if((PIND | 0b11011111) == 0b11011111){
+		analogico();
+		}
 		switch(switch_)
 		{
 			/*Switch 1 will make the motor rotate at 25% of its nominal speed, and save the value "25" in variables
@@ -159,20 +154,34 @@ int main(void)
 			/*Changes the motor speed*/
 			OCR2 = DC(motor);
 		}
-		while(analog == 1){
-		screen0 = 0b11000010;
-		read_analog();
+	}
+void ler_AD(void){
+	ADCSRA = ADCSRA | 0b01000000;
+	
+	while((ADCSRA & (1<<ADSC)) != 0);
+	
+	lerL = ADCL;
+	lerH = ADCH;
+}
+int analogico(void){
+    while(1){
+        screen0 = 0b11000010;
+		if((PIND | 0b11101111) == 0b11101111){
+		digital();
+		}
+		ler_AD();
 		if(negative == 1) flag1 = 1;
-		AD = (leituraH << 8) + leituraL;
-		AD = convert(AD);
+		AD = (lerH << 8) + lerL;
+		//AD = convert(AD);
 		temp = AD;
 		if(AD == 0 || AD == 1024){
 			screen3 = display[12];
 			screen2 = display[12];
+			motor=100;
 		}
 		else{
 			if(AD<=481){
-				temp = (481-temp)/481*100;
+				motor = ((481-temp)/481)*100;
 				if(flag1 == 0)
 				{
 					mudar_rot();
@@ -182,10 +191,10 @@ int main(void)
 			else{
 				if(AD<543)
 				{
-					temp = 0;
+					motor = 0;
 				}
 				else{
-					temp = (temp-542)/481*100;
+					motor = ((temp-542)/481)*100;
 					if(flag1 == 1)
 					{
 						mudar_rot();
@@ -193,12 +202,17 @@ int main(void)
 					flag1 = 0;
 				}
 			}
-			screen3=display[temp%10];
-			screen2=display[temp/10];
+			screen3=display[motor%10];
+			screen2=display[motor/10];
 		}
-		OCR2 = DC(AD);
-		}
+		OCR2 = DC(motor);
 	}
+}
+/*This is our main function where there is a case/switch that will operate acording to the switches that are pressed*/
+int main(void)
+{
+	inic();
+	digital();
 }
 /*In this function the direction of the motor will be checked and changed */
 void mudar_rot(void)
@@ -233,7 +247,7 @@ void display_(void)
 	PORTD = 0b00000000;
 	PORTC = screen0;
 }
-int convert(long long n)
+int convert(unsigned long n)
 {
 	int dec = 0, i = 0, rem;
 	while (n != 0) {
