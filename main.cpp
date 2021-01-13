@@ -1,240 +1,309 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdio.h>
+#include <ctype.h>
 #define F_CPU 16000000UL
 #include <util/delay.h>
-#include <stdio.h>
 
-#define DC(valor) ((255*valor)/100)		// velocidade do motor
+/* In this first line we added a "function" that will compute the motor speed when we "feed" it with the percentage */
+#define DC(valor) ((255*valor)/100)
 
-// criar tabela em mem?ria de programa - const
-const unsigned char display[] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0b10111111, 0xFF, 0b00010001, 0b00000011, 0b11000110}; //0-9, "-", desligado, A, D, C
+/*This table will be used to display the numbers on the screen, we added all the values 0-9 so it is easier to add more if needed
+  we also added the "-" for the negative sign*/
+const unsigned char display[] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0xbf, 0xff};
 
-// vari?veis globais
-volatile unsigned char sw,pc=0;
-volatile unsigned char flagtimer;
-volatile unsigned char display_dir, display_esq, display_mid, display_aleixo;
-volatile unsigned char motor, negativo;
-volatile unsigned char val[4] = {11, 11, 11, 11};
+/*This is our global variables, all volatile as all of them are altered in the middle of the code*/
+volatile unsigned char switch_;
+volatile unsigned char flag,negative=0;
+volatile unsigned char screen1, screen2, screen3,screen0;
+volatile unsigned char motor;
+volatile unsigned char failsafe=0;
+volatile unsigned char sentido;
+
+/*this are the new variables that will be used with USART*/
+typedef struct USARTRX
+{
+	char receiver_buffer;
+	unsigned char status;
+	unsigned char receive: 1;
+	unsigned char error: 1;
+
+} 	USARTRX_st;
+
+volatile USARTRX_st rxUSART = {0,0,0,0};
+char transmit_buffer[30];
 
 
-
-void config(void);
-void send_message(char *buffer);
-void mudar_rot(void);
-void disupdate(void);
-
+/*This is the initialization function where all the starting commands will be performed (such as defining ports and interrupts)*/
 void inic(void)
 {
-	
-	DDRD = 0b11000000;		// configura porta - sw
-	DDRC = 0b11111111;		// configura portc - displays
-	
-	
-	
-	
-	DDRB = 0b11100000;    // port motor
+	/* Pin 7 and 8 will be used as outputs so we can select which display we intend to use*/
+	DDRD = 0b11000000;			
+	/*In this couple of lines we initialize PORTC as output and make sure that all the displays are turned off*/
+	DDRC = 0b11111111;
+	screen3 = display[11];
+	screen2 = display[11];
+	screen1 = display[11];
+
+	/*PortB is the one used for the motor and is initialized in this 2 lines*/
+	DDRB = 0b11100000;
 	PORTB = 0b00100000;
+	DDRE =  0b11000000;	
 	
-	//interrup??o externa
+	/*External interrupts are initialized here which will be used to determine which of the switches were pressed*/
 	EICRA = 0b10101010;
 	EIMSK = 0b00001111;
-	
-	OCR0 = 77;              // configura TC0 @16MHz
-	TCCR0 = 0b00001111;     // 5ms, prescaler 1024, CTC
-	TIMSK |= 0b00000010;    // interrup??o TC0
-	
+
+	/*Here we initialize the Timer/Counter 0 with a prescaler of 1024 giving us a time of 5ms*/
+	OCR0 = 77;
+	TCCR0 = 0b00001111;    
+	TIMSK |= 0b00000010;
+
+	/*OCR2 is where we give the microcontroler the information of the speed we want it to operate in, we forced it to start turned off,
+	this uses the Timer/Counter 2 so we also initialized it TC2 witch a prescaler of 64 mode 1 and phase correct*/
 	OCR2 = DC(0);
-	TCCR2 = 0b01100011;		//  TC2 - prescaler 64, modo 1, phase correct
-	
-	sei();           //ativa flag I do SREG
+	TCCR2 = 0b01100011;
 
-	negativo = 1;
+	/*Here we will initialize and configure the USART*/
+	UBRR0H = 0;
+	UBRR0L = 207;
+	UCSR0A = 0;
+	UCSR0B = (1<<RXCIE0) | (1<<RXEN0) | (1<< TXEN0);
+	UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);
+
+	sei();
+
 }
 
+/*Here we tell the program that there are functions on the bottom that will be needed*/
+void mudar_rot(void);
+void display_(void);
+void send_message(char *buffer);
+void lercons(void);
+void computer(void);
 
-
-// rotina interrup??o TC0
-ISR(TIMER0_COMP_vect)
-{
-	disupdate();
-	flagtimer = 1;
-}
-
-volatile char rx_usart;
-volatile char dado_rx;
-char tx_buffer[50];
-
+/*This is the interrupt functions starting with the Timer/Counter 0 and followed by the switches*/
 ISR(USART0_RX_vect)
 {
-	dado_rx = UDR0;
-	rx_usart = 1;
+	rxUSART.status = UCSR0A; //error flag
+	
+	if(rxUSART.status & ((1<<FE0) | (1<<DOR0)| (1>>UPE0)))
+	{
+		rxUSART.error = 1;
+	}
+	
+	rxUSART.receiver_buffer = UDR0;
+	rxUSART.receive = 1;
 }
 
-
-int main()
+ISR(TIMER0_COMP_vect)
 {
-	inic();
-	config();
+	display_();
+	flag = 1;
+}
 
-	while (1)
+ISR(INT0_vect) 
+{
+	switch_=1;
+}
+
+ISR(INT1_vect) 
+{
+	switch_=2;
+}
+
+ISR(INT2_vect)
+{
+	switch_=3;
+}
+
+ISR(INT3_vect)
+{
+	switch_=4;
+}
+
+void lercons(void)
+{
+	if(rxUSART.error == 1)
 	{
-		if(rx_usart == 1)
+		sprintf(transmit_buffer,"\r\nErro, tente de novo\r\n");
+		rxUSART.error = 0;
+	}
+
+	while(rxUSART.receive!= 0)
+	{
+		sprintf(transmit_buffer,"\r\nFoi premida a tecla:\t %c\r\n",rxUSART.receiver_buffer);
+		send_message(transmit_buffer);
+		rxUSART.receive = 0;	
+	}
+
+	if(toupper(rxUSART.receiver_buffer) == 'C')
+	{
+		computer();
+	}
+
+	if(toupper(rxUSART.receiver_buffer) == 'L')
+	{
+		if(negative == 1)	sentido = '-';
+		else sentido = '+';
+		sprintf(transmit_buffer,"\r\nSentido: %c  Velocidade: %d\r\n",sentido,motor);
+		send_message(transmit_buffer);
+	}						
+}
+
+void computer(void)
+{
+	while((PIND | 0b11101111) != 0b11101111)
+	{
+		screen0= 0b11000110;
+		_delay_ms(30);
+
+		if(rxUSART.receive == 1)
 		{
-			rx_usart = 0;
-			sprintf(tx_buffer, "tecla:%c\n", dado_rx);
-			send_message(tx_buffer);
+			sprintf(transmit_buffer,"\r\nFoi premida a tecla:\t %c\r\n",rxUSART.receiver_buffer);
+			send_message(transmit_buffer);
+			rxUSART.receive = 0;
 		}
-		while(pc == 0)
+
+		switch(toupper(rxUSART.receiver_buffer))
 		{
-			switch (dado_rx)
-			{
-				case 'c':
-				val[3] = 14;
-				break;
-				
-				case 'b':
-				val[1] = 2;
-				val[2] = 5;
-				val[3] = 14;
-				motor = 25;
-				OCR2 = DC(motor);
-				break;
-				
-				case 'm':
-				val[1] = 7;
-				val[2] = 0;
-				val[3] = 14;
-				motor = 70;
-				OCR2 = DC(motor);
-				break;
-				
-				case 'i':
-				val[3] = 14;
-				if(val[0] == 11)
+			case 'B':	
+				screen3 = display[5];
+				screen2 = display[2];
+				if(negative == 1)
 				{
-					val[0] = 10;
-					negativo = 0;
+					screen1 = display[10];
+				}
+				motor = 25;
+				break;
+			
+			/*Switch 2 will make the motor rotate at 25% of its nominal speed, and save the value "25" in variables
+			 so it is displayed in the 7 segment display*/
+			case 'M':	
+				screen3 = display[0];
+				screen2 = display[7];
+				if(negative == 1)
+				{
+					screen1 = display[10];
+				}
+				motor = 70;
+				break;
+			
+			/*Switch 3 will check what value is being currently displayed ( "-" or " " ) and call the function that will make the motor
+			switch the direction of its rotation*/
+			case 'I':	
+				if(flag==0) break;
+				flag = 0;
+				if(screen1 == display[11] && negative == 0)
+				{
+					screen1 = display[10];
+					negative = 1;
 				}
 				else
 				{
-					val[0] = 11;
-					negativo =1;
+					screen1 = display[11];
+					negative = 0;
 				}
-				dado_rx = 0;
-				
 				mudar_rot();
+				rxUSART.receiver_buffer = 0;
 				break;
-				
-				case 'l':
-				if(negativo==0)
-				{
-					sprintf(tx_buffer, "Sentido: negativo\r\n");
-					send_message(tx_buffer);
-					sprintf(tx_buffer, "Velocidade do motor: %d\r\n", motor);
-					send_message(tx_buffer);
-				}
-				else
-				{
-					sprintf(tx_buffer, "Sentido: positivo\r\n");
-					send_message(tx_buffer);
-					sprintf(tx_buffer, "Velocidade do motor: %d\r\n", motor);
-					send_message(tx_buffer);
-				}
-				dado_rx = 0;
-				break;
-				case 'p':
-				val[3] = 14;
-				val[1] = 11;
-				val[2] = 11;
-				val[0] = 11;
+
+			/*Switch 4 will make the motor stop and turn of the display*/
+			case 'P':	
+				screen3 = display[11];
+				screen2 = display[11];
+				screen1 = display[11];
 				motor = 0;
-				OCR2 = DC(motor);
-				if(negativo == 0)
-				{
-					mudar_rot();
-				}
 				break;
-				if((PIND | 0b11101111) == 0b11101111)
-				{
-					val[0] = 0;
-					pc = 1;
-				}
-				if((PIND | 0b11011111) == 0b11011111)
-				{
-					pc = 2;
-				}
-				
-			}
+
+			case 'L':
+				if(negative == 1)	sentido = '-';
+				else sentido = '+';
+				sprintf(transmit_buffer,"\r\nSentido: %c  Velocidade: %d\r\n",sentido,motor);
+				send_message(transmit_buffer);
+				rxUSART.receiver_buffer = 0;
 		}
-		while(pc == 1)
-		{
-			switch(sw)
-			{
-				case 1:				// sw1 - 25% da velocidade nominal
-				sw=0;
-				val[2] = 2;
-				val[3] = 5;
-				motor = 25;
-				OCR2 = DC(motor);
-				break;
-				
-				case 2:			// sw2 - 70% da velocidade nominal
-				sw=0;
-				val[2] = 7;
-				val[3] = 0;
-				motor = 70;
-				OCR2 = DC(motor);
-				break;
-				
-				
-				case 3:			// sw3 - inverte o sentido de rota??o
-				sw=0;
-				if(flagtimer == 1)
-				{
-					
-					if(val[1] == 11)
-					{
-						val[1] = 10;
-						negativo = 0;
-					}
-					else
-					{
-						val[1] = 11;
-						negativo =1;
-					}
-					
-					mudar_rot();
-					flagtimer = 0;
-				}
-				
-				
-				break;
-				
-				case 4:			// sw4 - para o motor
-				sw=0;
-				val[2] = 11;
-				val[3] = 11;
-				val[1] = 11;
-				motor = 0;
-				OCR2 = DC(motor);
-				if(negativo == 0)
-				{
-					mudar_rot();
-				}
-				break;
-			}
-		}
-		
+		OCR2 = DC(motor);
+		rxUSART.receive = 0;
 	}
 }
 
+/*This is our main function where there is a case/switch that will operate acording to the switches that are pressed*/
+int main(void)
+{
+	inic();
+	
+	while (1)
+	{
+		_delay_ms(30);
+		if(rxUSART.receive == 1)
+		{	
+			lercons();
+		}
+		screen0= 0b10100001;
 
+		switch(switch_)
+		{
+			/*Switch 1 will make the motor rotate at 25% of its nominal speed, and save the value "25" in variables
+			 so it is displayed in the 7 segment display*/
+			case 1:	
+				screen3 = display[5];
+				screen2 = display[2];
+				if(negative == 1)
+				{
+					screen1 = display[10];
+				}
+				motor = 25;
+				break;
+			
+			/*Switch 2 will make the motor rotate at 25% of its nominal speed, and save the value "25" in variables
+			 so it is displayed in the 7 segment display*/
+			case 2:	
+				screen3 = display[0];
+				screen2 = display[7];
+				if(negative == 1)
+				{
+					screen1 = display[10];
+				}
+				motor = 70;
+				break;
+			
+			/*Switch 3 will check what value is being currently displayed ( "-" or " " ) and call the function that will make the motor
+			switch the direction of its rotation*/
+			case 3:	
+				if(flag==0) break;
+				flag = 0;
+				if(screen1 == display[11] && negative == 0)
+				{
+					screen1 = display[10];
+					negative = 1;
+				}
+				else
+				{
+					screen1 = display[11];
+					negative = 0;
+				}
+				mudar_rot();
+				break;
 
+			/*Switch 4 will make the motor stop and turn of the display*/
+			case 4:	
 
+				screen3 = display[11];
+				screen2 = display[11];
+				screen1 = display[11];
+				motor = 0;
+				break;
+		}
 
+		/*Resets the value of the switch*/
+		switch_=0;
+		/*Changes the motor speed*/
+		OCR2 = DC(motor);
+	}
+}
 
-
-// inverte sentido da rota??o
+/*In this function the direction of the motor will be checked and changed */
 void mudar_rot(void)
 {
 	if (PORTB & (1<<5))
@@ -242,41 +311,47 @@ void mudar_rot(void)
 		PORTB |=(1<<5)|(1<<6);
 		_delay_ms(500);
 		PORTB &=~(1<<5);
-	}else
+	}
+	else
 	{
 		PORTB |=(1<<5)|(1<<6);
 		_delay_ms(500);
-		PORTB &= ~(1<<6);
+		PORTB &=~(1<<6);
 	}
 }
 
-
-void disupdate(void)
+/*In this function we update the display with the values of the variables given from the above functions*/
+void display_(void)
 {
-	PORTD += 0x40;
-	PORTC = display[val[PORTD>>6]];
-}
+	PORTD = 0b11000000;
+	PORTC = screen3;
+	_delay_ms(1);
 
-//configuration
+	PORTD = 0b10000000;
+	PORTC = screen2;
+	_delay_ms(1);
 
-void config(void)
-{
-	UBRR0H = 0;
-	UBRR0L = 207;
-	UCSR0A = 0;
-	UCSR0B = (1<<RXCIE0) | (1<<RXEN0) | (1<< TXEN0);
-	UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);
-	
-	sei(); //habilita interrupçoes
+	PORTD = 0b01000000;
+	/*This "if" condition is used to make sure the "-" sign wont appear when the motor is off*/
+	if(motor!=0)
+	{
+		PORTC = screen1;
+		_delay_ms(1);
+	}
+
+	PORTD = 0b00000000;
+	PORTC = screen0;
 }
 
 void send_message(char *buffer)
 {
 	unsigned char i=0;
-	while(buffer[i]!='\0'){
+	while(buffer[i]!='\0')
+	{
 		while((UCSR0A & 1<<UDRE0) == 0);
 		UDR0 = buffer[i];
 		i++;
 	}
 	return;
 }
+
