@@ -3,6 +3,7 @@
 Pastas com os projetos para a disciplina de MICMIC 2º ano de LEEC.
 
 ## Updates
+-  *19/1* Projeto Arquivado 
 -  *11/1* Projeto3 em C adicionado usando o USART0.
 -  *1/1* Projeto2 em C adicionado, falta ainda código em assembly.
 -  *1/1* Projeto1 em C adicionado na sua fase final.
